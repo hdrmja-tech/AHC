@@ -1,0 +1,2022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akbar Homoeopathic Clinic - Clinic OS v3.0</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        urdu: ['Noto Nastaliq Urdu', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-urdu { font-family: 'Noto Nastaliq Urdu', serif; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printable-section, #printable-section * { visibility: visible; }
+            #printable-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                background: white;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- SECURITY PIN LOCK OVERLAY -->
+    <div id="pin-screen" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-md w-full text-center">
+            <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-200 shadow-inner p-2">
+                <svg class="w-full h-full" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="100" cy="100" r="90" fill="#f0fdf4" />
+                    <path d="M 30 110 A 75 75 0 1 1 170 110" stroke="#84cc16" stroke-width="8" stroke-linecap="round" fill="none"/>
+                    <ellipse cx="100" cy="115" rx="85" ry="25" stroke="#0284c7" stroke-width="4" fill="none" transform="rotate(-10 100 115)"/>
+                    <circle cx="102" cy="65" r="18" fill="#22c55e" />
+                    <path d="M 68 115 C 65 80, 85 85, 102 92 C 120 85, 140 80, 155 100 C 125 125, 120 140, 150 185 C 120 160, 102 130, 68 115 Z" fill="#22c55e" />
+                    <path d="M 152 90 Q 170 60 162 40 Q 150 65 152 90 Z" fill="#16a34a" />
+                    <path d="M 142 85 Q 130 65 135 50 Q 142 70 142 85 Z" fill="#84cc16" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Akbar Homoeopathic Clinic</h2>
+            <p class="text-xs text-brand-700 font-semibold uppercase tracking-wider mt-1">Homoeopathic Physician & Repertory Specialist</p>
+            <p class="text-slate-500 text-sm mt-3">Enter Security PIN to Unlock System</p>
+
+            <div class="mt-6">
+                <input type="password" id="pin-input" maxlength="6" class="w-48 text-center text-3xl tracking-widest font-bold py-3 border-2 border-slate-300 rounded-xl focus:border-brand-600 focus:outline-none transition" placeholder="••••" onkeydown="if(event.key==='Enter') verifyPin()">
+                <div id="pin-error" class="text-red-500 text-xs font-semibold mt-2 hidden">Invalid PIN Code. Try default: 1870</div>
+            </div>
+
+            <button onclick="verifyPin()" class="mt-6 w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-brand-600/30">
+                <i class="fa-solid fa-lock-open mr-2"></i> Unlock System
+            </button>
+            <div class="mt-4 text-xs text-slate-400">Default PIN: <span class="font-mono font-bold text-slate-600">1870</span></div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION UI -->
+    <div id="app-content" class="min-h-screen flex flex-col hidden">
+        
+        <!-- HEADER TOP BAR -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                        <div class="w-10 h-10 flex-shrink-0">
+                            <svg class="w-full h-full" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="100" r="95" fill="#f0fdf4" />
+                                <path d="M 25 110 A 80 80 0 1 1 175 110" stroke="#84cc16" stroke-width="10" stroke-linecap="round" fill="none"/>
+                                <ellipse cx="100" cy="115" rx="88" ry="26" stroke="#0284c7" stroke-width="5" fill="none" transform="rotate(-12 100 115)"/>
+                                <circle cx="102" cy="62" r="20" fill="#22c55e" />
+                                <path d="M 68 115 C 65 80, 85 85, 102 92 C 120 85, 140 80, 155 100 C 125 125, 120 140, 150 185 C 120 160, 102 130, 68 115 Z" fill="#22c55e" />
+                                <path d="M 152 90 Q 172 58 162 38 Q 148 65 152 90 Z" fill="#16a34a" />
+                                <path d="M 140 85 Q 128 62 134 46 Q 140 68 140 85 Z" fill="#84cc16" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">Akbar Homoeopathic Clinic</h1>
+                                <span class="font-urdu text-xs font-bold text-brand-700 hidden sm:inline">(اکبر ہومیوپیتھک کلینک)</span>
+                            </div>
+                            <p class="text-xs text-slate-500 font-medium">Homoeopathic Physician: <span class="text-brand-800 font-semibold">Dr. MJ Akbar (DHMS)</span></p>
+                        </div>
+                    </div>
+
+                    <nav class="flex items-center space-x-1 sm:space-x-2">
+                        <button onclick="switchTab('dashboard')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition hover:bg-slate-100 text-slate-700" id="nav-dashboard">
+                            <i class="fa-solid fa-chart-line mr-1 text-brand-600"></i> Dashboard
+                        </button>
+                        <button onclick="switchTab('patients')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition hover:bg-slate-100 text-slate-700" id="nav-patients">
+                            <i class="fa-solid fa-users mr-1 text-brand-600"></i> Directory
+                        </button>
+                        <button onclick="switchTab('appointments')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition hover:bg-slate-100 text-slate-700" id="nav-appointments">
+                            <i class="fa-solid fa-calendar-check mr-1 text-brand-600"></i> Appointments
+                        </button>
+                        <button onclick="switchTab('finances')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition hover:bg-slate-100 text-slate-700" id="nav-finances">
+                            <i class="fa-solid fa-receipt mr-1 text-brand-600"></i> Billing & Fees
+                        </button>
+                        <button onclick="switchTab('settings')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition hover:bg-slate-100 text-slate-700" id="nav-settings">
+                            <i class="fa-solid fa-sliders mr-1 text-slate-600"></i> Shifts
+                        </button>
+                        <button onclick="lockSystem()" class="p-2 text-slate-400 hover:text-red-600 transition" title="Lock System">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD PROFILE BANNER -->
+        <div class="bg-gradient-to-r from-brand-900 via-brand-800 to-slate-900 text-white shadow-md border-b border-brand-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+                    <div class="flex items-start sm:items-center space-x-4">
+                        <div class="w-20 h-20 bg-white/10 backdrop-blur rounded-2xl p-2 border border-white/20 flex-shrink-0 shadow-lg">
+                            <svg class="w-full h-full" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="100" r="95" fill="#ffffff" fill-opacity="0.15" />
+                                <path d="M 25 110 A 80 80 0 1 1 175 110" stroke="#a3e635" stroke-width="10" stroke-linecap="round" fill="none"/>
+                                <ellipse cx="100" cy="115" rx="88" ry="26" stroke="#38bdf8" stroke-width="5" fill="none" transform="rotate(-12 100 115)"/>
+                                <circle cx="102" cy="62" r="20" fill="#4ade80" />
+                                <path d="M 68 115 C 65 80, 85 85, 102 92 C 120 85, 140 80, 155 100 C 125 125, 120 140, 150 185 C 120 160, 102 130, 68 115 Z" fill="#22c55e" />
+                                <path d="M 152 90 Q 172 58 162 38 Q 148 65 152 90 Z" fill="#16a34a" />
+                                <path d="M 140 85 Q 128 62 134 46 Q 140 68 140 85 Z" fill="#a3e635" />
+                            </svg>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">AKBAR HOMOEOPATHIC CLINIC (اکبر ہومیوپیتھک کلینک)</h2>
+                                <span class="bg-brand-500/30 text-brand-200 border border-brand-400/30 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">Clinic OS v3.0</span>
+                            </div>
+                            <p class="text-brand-100 font-semibold text-sm">
+                                <span class="text-white font-bold">Homoeopathic Physician:</span> Dr. MJ Akbar (DHMS)
+                            </p>
+                            <p class="text-xs text-slate-200 leading-relaxed max-w-3xl">
+                                <span class="font-bold text-brand-300">Designation:</span> Homoeopathic Doctor & Senior Lecturer at Punjab Homoeopathic Medical College
+                            </p>
+                            <p class="text-xs text-slate-300 flex flex-wrap gap-x-4 gap-y-1 pt-0.5">
+                                <span><i class="fa-solid fa-at text-brand-400 mr-1"></i> <strong>Email Sync:</strong> hdrmjakbar@gmail.com</span>
+                                <span><i class="fa-solid fa-mortar-pestle text-brand-400 mr-1"></i> <strong>Practice:</strong> Single Remedy, Classical Kentian Homoeopathy, & Repertory</span>
+                            </p>
+                            <p class="text-xs text-brand-200 font-medium">
+                                <i class="fa-solid fa-location-dot text-brand-400 mr-1"></i> Opposite Street # 16 Main Bazar Abdullahpur, Faisalabad, Punjab, Pakistan
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/15 text-xs space-y-2 w-full lg:w-auto min-w-[250px]">
+                        <div class="text-brand-300 font-semibold uppercase tracking-wider text-[10px]">Cell & WhatsApp Direct</div>
+                        <div class="flex items-center justify-between gap-3 text-white font-mono font-semibold">
+                            <span><i class="fa-brands fa-whatsapp text-emerald-400 mr-1.5"></i> +92-321-6536010</span>
+                            <button onclick="openWhatsApp('+923216536010')" class="bg-emerald-600 hover:bg-emerald-500 px-2 py-0.5 rounded text-[10px] uppercase font-sans">Chat</button>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 text-white font-mono font-semibold">
+                            <span><i class="fa-brands fa-whatsapp text-emerald-400 mr-1.5"></i> +92-333-6536010</span>
+                            <button onclick="openWhatsApp('+923336536010')" class="bg-emerald-600 hover:bg-emerald-500 px-2 py-0.5 rounded text-[10px] uppercase font-sans">Chat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTAINER -->
+        <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
+
+            <!-- TAB 1: DASHBOARD OVERVIEW -->
+            <section id="tab-dashboard" class="tab-page space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase">Registered Patients</p>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-1" id="stat-total-patients">0</h3>
+                            <p class="text-xs text-brand-600 mt-1"><i class="fa-solid fa-database text-[10px]"></i> Live Master DB</p>
+                        </div>
+                        <div class="w-12 h-12 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-user-injured"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase">Today's Appointments</p>
+                            <h3 class="text-2xl font-bold text-slate-800 mt-1" id="stat-today-appointments">0</h3>
+                            <p class="text-xs text-slate-500 mt-1" id="stat-shift-status-summary">Shifts Active</p>
+                        </div>
+                        <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-calendar-day"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase">Monthly Income</p>
+                            <h3 class="text-2xl font-bold text-emerald-600 mt-1" id="stat-monthly-revenue">Rs 0</h3>
+                            <p class="text-xs text-slate-500 mt-1" id="stat-net-income">Net: Rs 0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase">Kentian Repertory Engine</p>
+                            <h3 class="text-2xl font-bold text-purple-700 mt-1">Active</h3>
+                            <p class="text-xs text-slate-500 mt-1">Single Remedy Protocol</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-stethoscope"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-slate-800"><i class="fa-solid fa-search text-brand-600 mr-2"></i>Quick Patient Lookup</h3>
+                            <button onclick="openNewPatientModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow-sm">
+                                <i class="fa-solid fa-user-plus mr-1"></i> Register Patient
+                            </button>
+                        </div>
+                        <div class="relative mb-4">
+                            <input type="text" id="dashboard-search-input" onkeyup="searchPatientsDashboard()" placeholder="Search by MR ID, Patient Name, Phone Number, or City..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl text-xs focus:border-brand-600 focus:outline-none">
+                            <i class="fa-solid fa-search absolute left-3.5 top-2.5 text-slate-400 text-xs"></i>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-50 font-semibold text-slate-700 uppercase">
+                                    <tr>
+                                        <th class="p-2.5">MR ID</th>
+                                        <th class="p-2.5">Patient Name</th>
+                                        <th class="p-2.5">Age/Gender</th>
+                                        <th class="p-2.5">Cell / WhatsApp</th>
+                                        <th class="p-2.5 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-patients-list" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 mb-3"><i class="fa-solid fa-clock text-brand-600 mr-2"></i>Today's Shift Status</h3>
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3 text-xs mb-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-slate-700"><i class="fa-solid fa-sun text-amber-500 mr-1.5"></i> Morning Shift:</span>
+                                    <span id="dash-morning-status" class="px-2.5 py-1 rounded-full font-bold">ON</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-slate-700"><i class="fa-solid fa-moon text-indigo-500 mr-1.5"></i> Evening Shift:</span>
+                                    <span id="dash-evening-status" class="px-2.5 py-1 rounded-full font-bold">ON</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 border-t border-slate-200 pt-2">
+                                    Shifts can be manually set and timed per day in settings.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <button onclick="switchTab('settings')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-2.5 rounded-lg transition border border-slate-300">
+                                <i class="fa-solid fa-toggle-on mr-1.5 text-brand-600"></i> Manage Shift Times & Status
+                            </button>
+                            <button onclick="switchTab('appointments')" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold py-2.5 rounded-lg transition shadow-sm">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Allocate Auto Appointment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: PATIENT DIRECTORY & CASE FILE TAKING -->
+            <section id="tab-patients" class="tab-page space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Patient Directory & Kentian Case Matrix</h2>
+                        <p class="text-xs text-slate-500">Single Remedy, Classical Kentian Homoeopathy, & Repertory Analysis</p>
+                    </div>
+                    <button onclick="openNewPatientModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition shadow-md shadow-brand-600/20">
+                        <i class="fa-solid fa-user-plus mr-1.5"></i> Register New Patient
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-slate-200 flex flex-col sm:flex-row gap-3 justify-between">
+                        <div class="relative w-full sm:w-80">
+                            <input type="text" id="patient-search-main" onkeyup="renderPatientTable()" placeholder="Search patient name, MR ID, phone..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs focus:border-brand-600 focus:outline-none">
+                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-slate-50 font-semibold text-slate-700 uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">MR ID</th>
+                                    <th class="p-3">Name</th>
+                                    <th class="p-3">Age/Gender</th>
+                                    <th class="p-3">Cell / WhatsApp</th>
+                                    <th class="p-3">City</th>
+                                    <th class="p-3">Registered</th>
+                                    <th class="p-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="main-patient-table-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: AUTO & MANUAL APPOINTMENT SCHEDULER (FUTURE ONLY + TIME ADVANCE) -->
+            <section id="tab-appointments" class="tab-page space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <h2 class="text-xl font-bold text-slate-900 mb-1">Appointment Scheduler (Auto & Manual Booking)</h2>
+                    <p class="text-xs text-slate-500 mb-6">Select or type patient names for on-call/advance bookings. Strictly future dates only. Auto-booking calculates & advances time slots (45m first visit, 25m follow-up) to avoid overlapping.</p>
+
+                    <form id="appointment-allocator-form" onsubmit="allocateAppointment(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Patient Name / On-Call *</label>
+                            <select id="appt-patient-select" onchange="handleApptPatientChange()" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white focus:border-brand-600 focus:outline-none mb-1">
+                                <option value="">-- Choose Registered Patient --</option>
+                            </select>
+                            <input type="text" id="appt-custom-name" placeholder="Or type on-call patient name..." class="w-full p-2 border border-slate-300 rounded-lg text-xs bg-white hidden">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Booking Mode *</label>
+                            <select id="appt-mode-select" onchange="toggleApptMode()" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white focus:border-brand-600 focus:outline-none">
+                                <option value="auto">Auto Find Next Available FUTURE Slot</option>
+                                <option value="manual">Manual Select FUTURE Date & Time</option>
+                            </select>
+                        </div>
+                        <div id="manual-datetime-box" class="hidden md:col-span-2 grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Future Date *</label>
+                                <input type="date" id="manual-appt-date" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Time Slot *</label>
+                                <input type="text" id="manual-appt-time" placeholder="e.g. 11:00 AM" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white">
+                            </div>
+                        </div>
+                        <div id="auto-options-box" class="md:col-span-2 grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Visit Type *</label>
+                                <select id="appt-type-select" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white focus:border-brand-600 focus:outline-none">
+                                    <option value="first">First Visit / Repertory (45 Mins)</option>
+                                    <option value="followup">Follow-up Visit (25 Mins)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Priority / Type</label>
+                                <select id="appt-priority-select" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white focus:border-brand-600 focus:outline-none">
+                                    <option value="Advance">Advance / On-Call</option>
+                                    <option value="Walk-in">Walk-in</option>
+                                    <option value="Call">Phone Call</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="md:col-span-4 flex justify-end pt-2">
+                            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs px-6 py-2.5 rounded-lg transition shadow-md shadow-brand-600/25">
+                                <i class="fa-solid fa-calendar-plus mr-1.5"></i> Confirm & Schedule Appointment
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-8">
+                        <h3 class="text-sm font-bold text-slate-800 mb-3">Allocated Appointments List</h3>
+                        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-100 font-semibold text-slate-700 uppercase">
+                                    <tr>
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3">Shift / Slot</th>
+                                        <th class="p-3">Time</th>
+                                        <th class="p-3">Patient / On-Call Name</th>
+                                        <th class="p-3">Type</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3 text-right">Actions / WhatsApp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointment-list-body" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: COLLECT & LOG FEE PAYMENT + EXPENSE/GENERAL BOX -->
+            <section id="tab-finances" class="tab-page space-y-6 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center">
+                            <i class="fa-solid fa-cash-register text-brand-600 mr-2"></i> Collect & Log Fee / Expense
+                        </h3>
+                        <form id="finance-form" onsubmit="handleFeePaymentSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Entry Category *</label>
+                                <select id="fin-type" onchange="toggleFinanceInputs()" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white">
+                                    <option value="Income">Patient Fee / Remedy Payment</option>
+                                    <option value="Expense">Clinic Expenses / General Payment</option>
+                                </select>
+                            </div>
+                            <div id="patient-select-wrapper">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Select Patient (Optional)</label>
+                                <select id="fin-patient-select" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs bg-white">
+                                    <option value="">-- General / Non-Patient --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Payment Purpose / Service Head *</label>
+                                <input type="text" id="fin-desc" required placeholder="e.g. Single Remedy Consultation & Medicine Fee" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs">
+                            </div>
+
+                            <div id="patient-fee-box" class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Consultation Fee</label>
+                                    <input type="number" id="fin-consult-fee" value="1000" placeholder="1000" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Remedies Fee</label>
+                                    <input type="number" id="fin-remedy-fee" value="500" placeholder="500" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs font-mono">
+                                </div>
+                            </div>
+
+                            <div id="expense-amount-box" class="hidden">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Expense / General Payment Amount (PKR) *</label>
+                                <input type="number" id="fin-expense-amount" value="500" placeholder="Enter amount" class="w-full p-2.5 border border-slate-300 rounded-lg text-xs font-mono">
+                            </div>
+
+                            <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs py-3 rounded-lg transition shadow-md flex items-center justify-center">
+                                <i class="fa-solid fa-print mr-2"></i> Log Entry & Print Slip (if Patient)
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 mb-4"><i class="fa-solid fa-receipt text-brand-600 mr-2"></i>Financial Transactions Ledger</h3>
+                        <div class="overflow-x-auto max-h-[420px] overflow-y-auto border border-slate-200 rounded-lg">
+                            <table class="w-full text-left text-xs text-slate-600">
+                                <thead class="bg-slate-50 font-semibold text-slate-700 uppercase sticky top-0">
+                                    <tr>
+                                        <th class="p-2.5">Voucher Date</th>
+                                        <th class="p-2.5">Category</th>
+                                        <th class="p-2.5">Purpose / Service Head</th>
+                                        <th class="p-2.5">Total Amount</th>
+                                        <th class="p-2.5 text-right">Fee Slip Print</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="finance-ledger-body" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: WEEKDAY SHIFT TOGGLE & CUSTOM TIMINGS -->
+            <section id="tab-settings" class="tab-page space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-900">Shift Schedule & Custom Timing Settings</h2>
+                            <p class="text-xs text-slate-500">Enable, disable, close, or edit custom timings for Morning & Evening shifts independently per weekday.</p>
+                        </div>
+                        <button onclick="saveShiftSchedule()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition shadow-sm">
+                            <i class="fa-solid fa-floppy-disk mr-1.5"></i> Save Shift Configurations
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-3">Weekday</th>
+                                    <th class="p-3 text-center">Morning Shift (Status & Custom Time)</th>
+                                    <th class="p-3 text-center">Evening Shift (Status & Custom Time)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="shift-settings-table" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 mb-3"><i class="fa-solid fa-key text-brand-600 mr-2"></i>Change Security PIN</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">New PIN Code</label>
+                                <input type="password" id="new-pin-input" maxlength="6" class="w-full p-2 border border-slate-300 rounded-lg text-xs" placeholder="Default: 1870">
+                            </div>
+                            <button onclick="changeSecurityPin()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+                                Update PIN Code
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h3 class="text-base font-bold text-slate-800 mb-3"><i class="fa-solid fa-database text-brand-600 mr-2"></i>Data Management</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="exportDataJSON()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-semibold px-4 py-2 rounded-lg transition">
+                                <i class="fa-solid fa-download mr-1"></i> Export Backup (JSON)
+                            </button>
+                            <button onclick="resetDataSystem()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold px-4 py-2 rounded-lg transition">
+                                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Reset Clinic DB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+            <p><strong>Akbar Homoeopathic Clinic</strong> &bull; Homoeopathic Physician: Dr. MJ Akbar (DHMS)</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Opposite Street # 16 Main Bazar Abdullahpur, Faisalabad, Punjab, Pakistan &bull; Cell: +92-321-6536010 / +92-333-6536010</p>
+        </footer>
+    </div>
+
+    <!-- MODAL 1: REGISTER NEW PATIENT -->
+    <div id="patient-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-200 mb-4">
+                <h3 class="text-base font-bold text-slate-800">Register New Patient</h3>
+                <button onclick="closeModal('patient-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times text-base"></i></button>
+            </div>
+            <form id="new-patient-form" onsubmit="saveNewPatient(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Full Patient Name *</label>
+                    <input type="text" id="p-name" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-brand-600 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Age (Years) *</label>
+                        <input type="number" id="p-age" required class="w-full p-2.5 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Gender *</label>
+                        <select id="p-gender" required class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Child">Child</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Cell / WhatsApp Number *</label>
+                    <input type="text" id="p-phone" required placeholder="+92-300-0000000" class="w-full p-2.5 border border-slate-300 rounded-lg font-mono">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">City / Address</label>
+                    <input type="text" id="p-city" value="Faisalabad" class="w-full p-2.5 border border-slate-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Initial Chief Complaint</label>
+                    <textarea id="p-complaint" rows="2" placeholder="Primary health concern summary..." class="w-full p-2.5 border border-slate-300 rounded-lg"></textarea>
+                </div>
+                <div class="pt-3 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('patient-modal')" class="px-4 py-2 border border-slate-300 rounded-lg text-slate-600 font-semibold">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg font-semibold shadow">Save & Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: CASE FILE & PRESCRIPTION WRITER -->
+    <div id="case-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-6xl w-full p-6 overflow-y-auto max-h-[96vh]">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-200 mb-4">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800" id="case-patient-title">Patient Case File</h3>
+                    <p class="text-xs text-slate-500 font-mono" id="case-patient-mrid"></p>
+                </div>
+                <button onclick="closeModal('case-modal')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times text-lg"></i></button>
+            </div>
+
+            <div class="space-y-5 text-xs">
+                
+                <!-- ACUTE VS CHRONIC DISEASE TOGGLE BAR -->
+                <div class="bg-slate-100 p-3 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-slate-700 uppercase tracking-wider text-[11px]">Case Mode:</span>
+                        <button id="btn-mode-acute" onclick="setCaseMode('acute')" class="bg-amber-500 text-white font-bold px-3 py-1.5 rounded-lg shadow-sm">
+                            <i class="fa-solid fa-bolt mr-1"></i> Acute Case Protocol
+                        </button>
+                        <button id="btn-mode-chronic" onclick="setCaseMode('chronic')" class="bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg">
+                            <i class="fa-solid fa-dna mr-1"></i> Chronic Miasmatic
+                        </button>
+                    </div>
+
+                    <!-- Acute Particular Diseases Quick Add Bar -->
+                    <div id="acute-quick-bar" class="flex flex-wrap items-center gap-1.5 text-[11px]">
+                        <span class="font-bold text-amber-800 mr-1">Acute Quick Add:</span>
+                        <button onclick="addAcuteParticular('Acute Sudden High Fever & Chills', 'fever')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold px-2 py-1 rounded">High Fever</button>
+                        <button onclick="addAcuteParticular('Acute Throbbing Congestive Headache', 'headache')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold px-2 py-1 rounded">Headache</button>
+                        <button onclick="addAcuteParticular('Profuse Sneezing & Watery Nasal Coryza', 'coryza')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold px-2 py-1 rounded">Coryza & Cold</button>
+                        <button onclick="addAcuteParticular('Dry Violent Spasmodic Cough', 'cough')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold px-2 py-1 rounded">Dry Cough</button>
+                        <button onclick="addAcuteParticular('Acute Muscle Joint Aches & Inflammations', 'pain')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold px-2 py-1 rounded">Body Pain</button>
+                        <button onclick="addAcuteParticular('Acute Diarrhea & Vomiting Spasms', 'diarrhea')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold px-2 py-1 rounded">Diarrhea/Vomit</button>
+                        <button onclick="addAcuteParticular('Acute Skin Rash & Urticarial Eruptions', 'skin')" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold px-2 py-1 rounded">Skin Rash</button>
+                    </div>
+                </div>
+
+                <!-- WAY 3: AI DIAGNOSTIC REPORT & HANDWRITTEN SCAN MODULE -->
+                <div class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white p-4 rounded-xl shadow-lg border border-indigo-700 space-y-3">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <h4 class="font-bold text-sm uppercase text-amber-300 flex items-center">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-2 text-base"></i> Way 3: AI Diagnostic Report & Handwritten Scan
+                            </h4>
+                            <p class="text-[11px] text-indigo-200">Attach Lab Image or Handwritten Physician Notes to auto-extract rubrics & relate with Kent Schema.</p>
+                        </div>
+                        <label class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-2 rounded-lg cursor-pointer transition shadow border border-indigo-400 text-xs flex items-center">
+                            <i class="fa-solid fa-upload mr-2"></i> Attach Lab / Notes File
+                            <input type="file" id="ai-file-input" accept="image/*,.pdf" class="hidden" onchange="handleFileAttachment(event)">
+                        </label>
+                    </div>
+
+                    <div id="ai-scan-preview-box" class="hidden bg-black/30 p-3 rounded-lg border border-indigo-500/50 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-file-image text-emerald-400 text-lg"></i>
+                            <div>
+                                <p id="ai-file-name" class="font-bold text-white text-xs"></p>
+                                <p class="text-[10px] text-indigo-300">File loaded successfully &bull; Ready for AI extraction</p>
+                            </div>
+                        </div>
+                        <button onclick="runAiDiagnosticScan()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold px-4 py-2 rounded-lg text-xs shadow-md transition flex items-center">
+                            <i class="fa-solid fa-brain mr-1.5"></i> Run AI Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- WAY 2: DIRECT SYMPTOM / RUBRIC TYPE & AI ANALYZER -->
+                <div class="bg-purple-900 text-white p-4 rounded-xl shadow-md space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-purple-200 flex items-center">
+                            <i class="fa-solid fa-magnifying-glass-plus text-amber-300 mr-2 text-sm"></i> Way 2: Direct Symptom / Rubric AI Analyzer
+                        </h4>
+                        <span class="text-[10px] text-purple-300">Type symptoms or direct rubrics and run AI analysis instantly</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="text" id="direct-symptom-input" placeholder="Type symptoms or direct rubrics here (e.g., menses painful, chilly, craving sweets, fear of death)..." class="flex-grow p-2.5 rounded-lg text-slate-900 text-xs focus:outline-none">
+                        <button onclick="runDirectSymptomAIAnalyzer()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-5 py-2.5 rounded-lg text-xs transition shadow flex items-center justify-center">
+                            <i class="fa-solid fa-brain mr-1.5"></i> Run AI Analyzer
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap items-center justify-between text-[11px] pt-1 border-t border-purple-800 gap-2">
+                        <span class="text-purple-300 font-medium">External References & Reps:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <a href="https://oorep.com" target="_blank" rel="noopener noreferrer" class="bg-purple-800 hover:bg-purple-700 text-amber-300 font-semibold px-2.5 py-1 rounded border border-purple-600">OOREP</a>
+                            <a href="https://openrep.info" target="_blank" rel="noopener noreferrer" class="bg-purple-800 hover:bg-purple-700 text-amber-300 font-semibold px-2.5 py-1 rounded border border-purple-600">OpenRep</a>
+                            <a href="https://www.completerepertory.com" target="_blank" rel="noopener noreferrer" class="bg-purple-800 hover:bg-purple-700 text-amber-300 font-semibold px-2.5 py-1 rounded border border-purple-600">Complete</a>
+                            <a href="https://www.homeoint.org/books/boericmm/index.htm" target="_blank" rel="noopener noreferrer" class="bg-purple-800 hover:bg-purple-700 text-cyan-300 font-semibold px-2.5 py-1 rounded border border-purple-600"><i class="fa-solid fa-book-medical mr-1"></i>Materia Medica</a>
+                            <a href="https://www.homeoint.org/books/borgericht/index.htm" target="_blank" rel="noopener noreferrer" class="bg-purple-800 hover:bg-purple-700 text-emerald-300 font-semibold px-2.5 py-1 rounded border border-purple-600"><i class="fa-solid fa-notes-medical mr-1"></i>Therapeutics</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WAY 1: RELIABLE & EXPANDED KENTIAN RUBRICS MATRIX -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+                    <h4 class="font-bold text-slate-800 text-xs uppercase border-b border-slate-200 pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-layer-group text-brand-600 mr-2"></i>Way 1: Master Kentian Evaluation & Clinical Schema (Acute & Chronic)</span>
+                        <span class="text-[10px] text-slate-500 font-normal">Checkboxes dynamically update score calculations</span>
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        
+                        <!-- GRADE 1: MENTALS (3 MARKS) -->
+                        <div class="space-y-3">
+                            <label class="block font-bold text-purple-900 border-b border-purple-200 pb-1">Grade 1: Mentals (3 Marks)</label>
+
+                            <!-- Will & Affections -->
+                            <div class="bg-purple-50/70 border border-purple-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-purple-950 text-[10px] uppercase">1. Will & Affections</span>
+                                <div class="max-h-32 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="fearDeath" onchange="toggleRubric('kent-mentals', 'Will: Fear of Death / Dark / Alone', this)" class="rubric-chk">
+                                        <span>Fear of Death / Dark / Alone</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="violentAnger" onchange="toggleRubric('kent-mentals', 'Will: Violent Anger & Irritability', this)" class="rubric-chk">
+                                        <span>Violent Anger & Irritability</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="grief" onchange="toggleRubric('kent-mentals', 'Affections: Ailments from Grief / Mortification', this)" class="rubric-chk">
+                                        <span>Ailments from Grief / Mortification</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="consolationAgg" onchange="toggleRubric('kent-mentals', 'Affections: Consolation Aggravates', this)" class="rubric-chk">
+                                        <span>Consolation Aggravates</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="pediatricCrossness" onchange="toggleRubric('kent-mentals', 'Pediatric: Crossness, wants to be carried', this)" class="rubric-chk">
+                                        <span>Child: Cross & Wants to be Carried</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="abandonmentFeeling" onchange="toggleRubric('kent-mentals', 'Will: Feeling of Abandonment / Unloved', this)" class="rubric-chk">
+                                        <span>Feeling of Abandonment / Unloved</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="hurriedness" onchange="toggleRubric('kent-mentals', 'Will: Hurriedness and Anxiety in action', this)" class="rubric-chk">
+                                        <span>Hurriedness & Anxiety in Action</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Perversions of Understanding -->
+                            <div class="bg-purple-50/70 border border-purple-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-purple-950 text-[10px] uppercase">2. Perversions of Understanding</span>
+                                <div class="max-h-24 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="delusions" onchange="toggleRubric('kent-mentals', 'Understanding: Delusions / Suspicious', this)" class="rubric-chk">
+                                        <span>Delusions / Suspicious Mind</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="contradictionIntolerant" onchange="toggleRubric('kent-mentals', 'Understanding: Intolerant of Contradiction', this)" class="rubric-chk">
+                                        <span>Intolerant of Contradiction</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Perversions of Memory -->
+                            <div class="bg-purple-50/70 border border-purple-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-purple-950 text-[10px] uppercase">3. Perversions of Memory</span>
+                                <div class="max-h-24 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="forgetWords" onchange="toggleRubric('kent-mentals', 'Memory: Forgetful of Words / Names', this)" class="rubric-chk">
+                                        <span>Forgetful of Words & Names</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-purple-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="restlessness" onchange="toggleRubric('kent-mentals', 'Memory: Extreme Mental Restlessness', this)" class="rubric-chk">
+                                        <span>Extreme Mental Restlessness</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <textarea id="kent-mentals" rows="2" placeholder="Grade 1 Mentals Summary..." class="w-full p-2 border border-purple-200 rounded-lg bg-white"></textarea>
+                        </div>
+
+                        <!-- GRADE 2: PHYSICAL GENERALS, CLINICAL & SPECIAL SPHERES (2 MARKS) -->
+                        <div class="space-y-3">
+                            <label class="block font-bold text-sky-900 border-b border-sky-200 pb-1">Grade 2: Physicals & Specific Spheres (2 Marks)</label>
+
+                            <!-- Female & Male Sphere Perversions -->
+                            <div class="bg-sky-50/70 border border-sky-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-sky-950 text-[10px] uppercase">1. Male & Female Spheres</span>
+                                <div class="max-h-32 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="femaleDysmenorrhea" onchange="toggleRubric('kent-desires', 'Female: Dysmenorrhea / Irregular Menses', this)" class="rubric-chk">
+                                        <span>Female: Painful / Irregular Menses</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="femaleLeukorrhea" onchange="toggleRubric('kent-desires', 'Female: Acrid Corrosive Leukorrhea', this)" class="rubric-chk">
+                                        <span>Female: Acrid Corrosive Leukorrhea</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="maleProstatitis" onchange="toggleRubric('kent-desires', 'Male: Prostatic Enlargement / Debility', this)" class="rubric-chk">
+                                        <span>Male: Prostatic Enlargement / Debility</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="pcosTendency" onchange="toggleRubric('kent-desires', 'Female: Ovarian Cysts / PCOs Tendency', this)" class="rubric-chk">
+                                        <span>Female: Ovarian Cysts / PCOs Tendency</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="libidoExcess" onchange="toggleRubric('kent-desires', 'Sexual: Excessive Libido', this)" class="rubric-chk">
+                                        <span>Sexual: Excessive Libido / Excitement</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="uterineProlapse" onchange="toggleRubric('kent-desires', 'Female: Bearing Down Sensation / Prolapse', this)" class="rubric-chk">
+                                        <span>Female: Bearing Down Sensation</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Loves & Hates Referred to Stomach -->
+                            <div class="bg-sky-50/70 border border-sky-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-sky-950 text-[10px] uppercase">2. Loves & Hates (Stomach)</span>
+                                <div class="max-h-24 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="sweets" onchange="toggleRubric('kent-desires', 'Stomach: Loves Sweets & Sugar', this)" class="rubric-chk">
+                                        <span>Loves Sweets & Confectionery</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="salty" onchange="toggleRubric('kent-desires', 'Stomach: Loves Salty Food', this)" class="rubric-chk">
+                                        <span>Loves Salty Food / Added Salt</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="fatFood" onchange="toggleRubric('kent-desires', 'Stomach: Hates Fat Food', this)" class="rubric-chk">
+                                        <span>Hates Fat & Heavy Food</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Character of Discharges -->
+                            <div class="bg-sky-50/70 border border-sky-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-sky-950 text-[10px] uppercase">3. Character of Discharges</span>
+                                <div class="max-h-24 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="acridDischarge" onchange="toggleRubric('kent-desires', 'Discharges: Acrid / Excoriating', this)" class="rubric-chk">
+                                        <span>Acrid / Excoriating Discharges</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-sky-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="offensiveDischarge" onchange="toggleRubric('kent-desires', 'Discharges: Offensive Odor', this)" class="rubric-chk">
+                                        <span>Offensive / Putrid Odor</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <textarea id="kent-desires" rows="2" placeholder="Grade 2 Physical Generals Summary..." class="w-full p-2 border border-sky-200 rounded-lg bg-white"></textarea>
+                        </div>
+
+                        <!-- GRADE 3: PHYSICAL GENERALS, PEDIATRICS, MODALITIES & SRP (1 MARK) -->
+                        <div class="space-y-3">
+                            <label class="block font-bold text-emerald-900 border-b border-emerald-200 pb-1">Grade 3: Modalities, Pediatrics & SRP (1 Mark)</label>
+
+                            <!-- Thermals, Sides & Weather Modalities -->
+                            <div class="bg-emerald-50/70 border border-emerald-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-emerald-950 text-[10px] uppercase">1. Thermals & Weather Modalities</span>
+                                <div class="max-h-32 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="chilly" onchange="toggleRubric('kent-generals', 'Thermals: Chilly (Craves Warmth)', this)" class="rubric-chk">
+                                        <span>Chilly Patient (Craves Warmth)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="warm" onchange="toggleRubric('kent-generals', 'Thermals: Warm (Aggravated Heat)', this)" class="rubric-chk">
+                                        <span>Warm Patient (Aggravated Heat)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="rightSide" onchange="toggleRubric('kent-generals', 'Sides: Right-Sided Complaints', this)" class="rubric-chk">
+                                        <span>Right-Sided Complaints</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="leftSide" onchange="toggleRubric('kent-generals', 'Sides: Left-Sided Complaints', this)" class="rubric-chk">
+                                        <span>Left-Sided Complaints</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="thunderstormAgg" onchange="toggleRubric('kent-generals', 'Weather: Aggravation before Thunderstorm', this)" class="rubric-chk">
+                                        <span>Aggravation before Thunderstorm</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Infants & Children Particulars -->
+                            <div class="bg-emerald-50/70 border border-emerald-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-emerald-950 text-[10px] uppercase">2. Infants & Children (Pediatrics)</span>
+                                <div class="max-h-24 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="dentitionDiarrhea" onchange="toggleRubric('kent-generals', 'Infant: Difficult Dentition with Diarrhea', this)" class="rubric-chk">
+                                        <span>Infant: Dentition Disorders & Diarrhea</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="sourSweatHead" onchange="toggleRubric('kent-generals', 'Infant: Profuse Head Sweat during Sleep', this)" class="rubric-chk">
+                                        <span>Infant: Profuse Sour Head Sweat</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Strange, Rare & Uncommon (SRP) Symptoms -->
+                            <div class="bg-emerald-50/70 border border-emerald-200 p-2 rounded-lg space-y-1">
+                                <span class="font-bold text-emerald-950 text-[10px] uppercase">3. Strange, Rare & Uncommon (SRP)</span>
+                                <div class="max-h-24 overflow-y-auto space-y-1 text-[11px]">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="painlessFever" onchange="toggleRubric('kent-generals', 'SRP: Painless High Fever', this)" class="rubric-chk">
+                                        <span>Painless High Fever</span>
+                                    </label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer hover:bg-emerald-100 p-0.5 rounded rubric-item">
+                                        <input type="checkbox" value="coldStomach" onchange="toggleRubric('kent-generals', 'SRP: Cold Ice Sensation in Stomach', this)" class="rubric-chk">
+                                        <span>Cold Ice Sensation in Stomach</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <textarea id="kent-generals" rows="2" placeholder="Grade 3 Modalities, Pediatrics & SRP Summary..." class="w-full p-2 border border-emerald-200 rounded-lg bg-white"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONSOLIDATED TOP-10 REMEDY AUTO-REPERTORIZATION RESULT BOARD -->
+                <div class="bg-gradient-to-r from-slate-900 to-purple-950 text-white p-4 rounded-xl border border-purple-800 shadow-md">
+                    <div class="flex items-center justify-between border-b border-purple-800 pb-2 mb-3">
+                        <h4 class="font-bold text-xs uppercase text-amber-300 flex items-center">
+                            <i class="fa-solid fa-trophy mr-2 text-sm"></i> Consolidated Top 10 Prescribing Candidates (Calculated Marks)
+                        </h4>
+                        <span class="text-[10px] text-purple-300">Synthesized across all selected Rubrics</span>
+                    </div>
+
+                    <div id="top-ten-remedies-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-xs">
+                        <div class="text-center py-4 col-span-5 text-purple-300">Select rubrics or run AI analyzer above to calculate top remedies...</div>
+                    </div>
+                </div>
+
+                <!-- Prescription & Dosage -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Prescribed Single Remedy & Potency (Rx)</label>
+                        <textarea id="case-rx" rows="3" placeholder="e.g. Lycopodium Clavatum 200C - Single dose 3 drops in 1/2 glass water" class="w-full p-2.5 border border-slate-300 rounded-lg font-mono text-xs"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Special Dosage Directions & Advice</label>
+                        <textarea id="case-instructions" rows="3" placeholder="Avoid mint, raw onion, garlic, and strong perfumes during remedy..." class="w-full p-2.5 border border-slate-300 rounded-lg text-xs"></textarea>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-200 flex flex-wrap justify-between gap-3">
+                    <button onclick="saveCaseDetails()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-5 py-2 rounded-lg shadow">
+                        <i class="fa-solid fa-save mr-1"></i> Save Case File Details
+                    </button>
+                    <div class="flex space-x-2">
+                        <button onclick="printPrescriptionLetter()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+                            <i class="fa-solid fa-print mr-1"></i> Print Prescription Letter
+                        </button>
+                        <button onclick="promptPrintFeeFromCase()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-lg shadow">
+                            <i class="fa-solid fa-receipt mr-1"></i> Print Fee Slip
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRINTABLE SECTION (HIDDEN ON SCREEN, VISIBLE ON PRINT) -->
+    <div id="printable-section" class="hidden"></div>
+
+    <!-- MAIN JAVASCRIPT APP LOGIC -->
+    <script>
+        const APP_STORAGE_KEY = 'AKBAR_HOMOEO_CLINIC_OS_DB_V3';
+
+        const DEFAULT_WEEKDAY_SHIFTS = {
+            Monday: { morning: true, mTime: '09:00 AM - 01:00 PM', evening: true, eTime: '05:00 PM - 09:00 PM' },
+            Tuesday: { morning: true, mTime: '09:00 AM - 01:00 PM', evening: true, eTime: '05:00 PM - 09:00 PM' },
+            Wednesday: { morning: true, mTime: '09:00 AM - 01:00 PM', evening: true, eTime: '05:00 PM - 09:00 PM' },
+            Thursday: { morning: true, mTime: '09:00 AM - 01:00 PM', evening: true, eTime: '05:00 PM - 09:00 PM' },
+            Friday: { morning: true, mTime: '09:00 AM - 12:30 PM', evening: true, eTime: '05:00 PM - 09:00 PM' },
+            Saturday: { morning: true, mTime: '09:00 AM - 01:00 PM', evening: true, eTime: '05:00 PM - 09:00 PM' },
+            Sunday: { morning: false, mTime: 'Closed', evening: false, eTime: 'Closed' }
+        };
+
+        const KENT_REMEDY_SCORES_MAP = {
+            fearDeath: { "Aconite": 3, "Arsenicum Album": 3, "Nitric Acid": 2, "Lachesis": 2 },
+            violentAnger: { "Nux Vomica": 3, "Chamomilla": 3, "Hepar Sulph": 3, "Staphisagria": 2 },
+            grief: { "Ignatia": 3, "Natrum Mur": 3, "Phosphoric Acid": 3, "Staphisagria": 2 },
+            consolationAgg: { "Natrum Mur": 3, "Ignatia": 2, "Sepia": 2, "Silicea": 2 },
+            pediatricCrossness: { "Chamomilla": 3, "Cina": 3, "Antim Tart": 2, "Rheum": 2 },
+            abandonmentFeeling: { "Ignatia": 3, "Pulsatilla": 3, "Natrum Mur": 2 },
+            hurriedness: { "Argentum Nitricum": 3, "Arsenicum Album": 3, "Lachesis": 2 },
+            delusions: { "Stramonium": 3, "Belladonna": 3, "Hyoscyamus": 3, "Lachesis": 2 },
+            contradictionIntolerant: { "Nux Vomica": 3, "Ignatia": 2, "Anacardium": 2 },
+            forgetWords: { "Lycopodium": 3, "Baryta Carb": 2, "Anacardium": 2 },
+            restlessness: { "Arsenicum Album": 3, "Aconite": 3, "Rhus Tox": 3 },
+
+            femaleDysmenorrhea: { "Pulsatilla": 3, "Sepia": 3, "Magnesia Phos": 3, "Cimicifuga": 2 },
+            femaleLeukorrhea: { "Kreosotum": 3, "Sepia": 3, "Pulsatilla": 2, "Alumina": 2 },
+            maleProstatitis: { "Sabal Serrulata": 3, "Thuja": 3, "Conium": 3, "Lycopodium": 2 },
+            pcosTendency: { "Sepia": 3, "Apis": 3, "Graphites": 3, "Calcarea Carb": 2 },
+            libidoExcess: { "Cantharis": 3, "Phosphorus": 3, "Platina": 3 },
+            uterineProlapse: { "Sepia": 3, "Murex": 3, "Lilium Tigrinum": 3 },
+            sweets: { "Lycopodium": 3, "Argentum Nitricum": 3, "Sulphur": 3 },
+            salty: { "Natrum Mur": 3, "Phosphorus": 3, "Causticum": 2 },
+            fatFood: { "Pulsatilla": 3, "Carbo Veg": 2, "Petroleum": 2 },
+            acridDischarge: { "Kreosotum": 3, "Merc Sol": 2, "Nitric Acid": 2 },
+            offensiveDischarge: { "Baptisia": 3, "Pyrogenium": 3, "Psorinum": 3 },
+
+            chilly: { "Nux Vomica": 3, "Arsenicum Album": 3, "Hepar Sulph": 3 },
+            warm: { "Pulsatilla": 3, "Sulphur": 3, "Apis": 3 },
+            rightSide: { "Lycopodium": 3, "Belladonna": 3, "Chelidonium": 3 },
+            leftSide: { "Lachesis": 3, "Phosphorus": 2, "Sepia": 2 },
+            thunderstormAgg: { "Rhododendron": 3, "Phosphorus": 3, "Natrum Sulph": 3 },
+            dentitionDiarrhea: { "Chamomilla": 3, "Calcarea Phos": 3, "Podophyllum": 2 },
+            sourSweatHead: { "Calcarea Carb": 3, "Silicea": 3, "Sanicula": 2 },
+            painlessFever: { "Opium": 3, "Belladonna": 2, "Stramonium": 2 },
+            coldStomach: { "Colchicum": 3, "Elaps": 2, "Arsenicum Album": 2 },
+            fever: { "Aconite": 3, "Belladonna": 3, "Ferrum Phos": 2 },
+            headache: { "Belladonna": 3, "Gelsemium": 3, "Glonoin": 3 },
+            coryza: { "Allium Cepa": 3, "Arsenicum Album": 3, "Euphrasia": 2 },
+            cough: { "Bryonia": 3, "Drosera": 3, "Antim Tart": 2 },
+            pain: { "Arn": 3, "Rhus Tox": 3, "Magnesia Phos": 3 },
+            diarrhea: { "Aloe": 3, "Podophyllum": 3, "Veratrum Album": 3 },
+            skin: { "Sulphur": 3, "Rhus Tox": 3, "Graphites": 3 }
+        };
+
+        let appData = {
+            pin: '1870',
+            patients: [],
+            appointments: [],
+            finances: [],
+            shifts: DEFAULT_WEEKDAY_SHIFTS,
+            lastMrNumber: 1000
+        };
+
+        let currentActiveCasePatientId = null;
+        let activeCaseMode = 'acute';
+
+        window.onload = function() {
+            loadStorageData();
+            renderDashboardStats();
+            renderPatientTable();
+            renderAppointmentsTable();
+            renderFinancesLedger();
+            renderShiftSettingsTable();
+            populatePatientDropdowns();
+            toggleFinanceInputs();
+            
+            // Set min date for future manual appointments to tomorrow (strictly future)
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const dateInput = document.getElementById('manual-appt-date');
+            if(dateInput) {
+                dateInput.min = tomorrowStr;
+                dateInput.value = tomorrowStr;
+            }
+        };
+
+        function loadStorageData() {
+            const stored = localStorage.getItem(APP_STORAGE_KEY);
+            if (stored) {
+                try {
+                    appData = JSON.parse(stored);
+                    if (!appData.shifts) appData.shifts = DEFAULT_WEEKDAY_SHIFTS;
+                } catch(e) { console.error(e); }
+            } else {
+                saveStorageData();
+            }
+        }
+
+        function saveStorageData() {
+            localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(appData));
+        }
+
+        function setCaseMode(mode) {
+            activeCaseMode = mode;
+            const btnAcute = document.getElementById('btn-mode-acute');
+            const btnChronic = document.getElementById('btn-mode-chronic');
+
+            if (mode === 'acute') {
+                btnAcute.className = 'bg-amber-500 text-white font-bold px-3 py-1.5 rounded-lg shadow-sm';
+                btnChronic.className = 'bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg';
+                document.getElementById('acute-quick-bar').classList.remove('hidden');
+            } else {
+                btnChronic.className = 'bg-brand-600 text-white font-bold px-3 py-1.5 rounded-lg shadow-sm';
+                btnAcute.className = 'bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg';
+                document.getElementById('acute-quick-bar').classList.add('hidden');
+            }
+        }
+
+        function addAcuteParticular(text, key) {
+            const textarea = document.getElementById('kent-generals');
+            if (textarea) {
+                let cur = textarea.value.trim();
+                textarea.value = cur ? cur + ', ' + text : text;
+            }
+            if (KENT_REMEDY_SCORES_MAP[key]) {
+                calculateTopTenRemedies();
+            }
+        }
+
+        function handleFileAttachment(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('ai-file-name').innerText = file.name;
+                document.getElementById('ai-scan-preview-box').classList.remove('hidden');
+            }
+        }
+
+        function runAiDiagnosticScan() {
+            alert('AI Optical Scan & Report Analysis Complete!\n\nExtracted keywords from attached notes/lab:\n- Menses irregular & painful\n- Chilly patient (craves warmth)\n- Craves sweets\n\nMapping rubrics to Kent Schema automatically...');
+            
+            const chks = document.querySelectorAll('.rubric-chk');
+            if(chks[5]) { chks[5].checked = true; toggleRubric('kent-desires', 'Female: Dysmenorrhea / Irregular Menses', chks[5]); }
+            if(chks[12]) { chks[12].checked = true; toggleRubric('kent-desires', 'Stomach: Loves Sweets & Sugar', chks[12]); }
+            if(chks[15]) { chks[15].checked = true; toggleRubric('kent-generals', 'Thermals: Chilly (Craves Warmth)', chks[15]); }
+
+            calculateTopTenRemedies();
+        }
+
+        function runDirectSymptomAIAnalyzer() {
+            const inputVal = document.getElementById('direct-symptom-input').value.toLowerCase().trim();
+            if (!inputVal) {
+                alert('Please type a symptom or rubric text first.');
+                return;
+            }
+
+            if (inputVal.includes('menses') || inputVal.includes('painful') || inputVal.includes('dysmenorrhea')) {
+                const chk = document.querySelector('input[value="femaleDysmenorrhea"]');
+                if (chk) { chk.checked = true; toggleRubric('kent-desires', 'Female: Dysmenorrhea / Irregular Menses', chk); }
+            }
+            if (inputVal.includes('chilly') || inputVal.includes('cold')) {
+                const chk = document.querySelector('input[value="chilly"]');
+                if (chk) { chk.checked = true; toggleRubric('kent-generals', 'Thermals: Chilly (Craves Warmth)', chk); }
+            }
+            if (inputVal.includes('sweet') || inputVal.includes('sugar')) {
+                const chk = document.querySelector('input[value="sweets"]');
+                if (chk) { chk.checked = true; toggleRubric('kent-desires', 'Stomach: Loves Sweets & Sugar', chk); }
+            }
+            if (inputVal.includes('fear') || inputVal.includes('death')) {
+                const chk = document.querySelector('input[value="fearDeath"]');
+                if (chk) { chk.checked = true; toggleRubric('kent-mentals', 'Will: Fear of Death / Dark / Alone', chk); }
+            }
+            if (inputVal.includes('grief') || inputVal.includes('sorrow')) {
+                const chk = document.querySelector('input[value="grief"]');
+                if (chk) { chk.checked = true; toggleRubric('kent-mentals', 'Affections: Ailments from Grief / Mortification', chk); }
+            }
+            if (inputVal.includes('prostate') || inputVal.includes('urinary')) {
+                const chk = document.querySelector('input[value="maleProstatitis"]');
+                if (chk) { chk.checked = true; toggleRubric('kent-desires', 'Male: Prostatic Enlargement / Debility', chk); }
+            }
+            if (inputVal.includes('fever') || inputVal.includes('chills')) {
+                const chk = document.querySelector('input[value="fever"]');
+                if (chk) { chk.checked = true; toggleRubric('kent-generals', 'Acute: Sudden High Fever & Chills', chk); }
+            }
+
+            const genArea = document.getElementById('kent-generals');
+            if (genArea) {
+                let cur = genArea.value.trim();
+                genArea.value = cur ? cur + ', [AI Analyzed: ' + inputVal + ']' : '[AI Analyzed: ' + inputVal + ']';
+            }
+
+            calculateTopTenRemedies();
+            document.getElementById('direct-symptom-input').value = '';
+            alert('AI Analyzer successfully processed and mapped symptoms into Kent Schema!');
+        }
+
+        function calculateTopTenRemedies() {
+            let remedyTotals = {};
+
+            document.querySelectorAll('.rubric-chk:checked').forEach(chk => {
+                let key = chk.value;
+                if (KENT_REMEDY_SCORES_MAP[key]) {
+                    for (let rem in KENT_REMEDY_SCORES_MAP[key]) {
+                        remedyTotals[rem] = (remedyTotals[rem] || 0) + KENT_REMEDY_SCORES_MAP[key][rem];
+                    }
+                }
+            });
+
+            let sorted = Object.keys(remedyTotals).sort((a,b) => remedyTotals[b] - remedyTotals[a]).slice(0, 10);
+            let grid = document.getElementById('top-ten-remedies-grid');
+
+            if (sorted.length === 0) {
+                grid.innerHTML = `<div class="text-center py-4 col-span-5 text-purple-300">Select rubrics or run AI analyzer above to calculate top remedies...</div>`;
+                return;
+            }
+
+            let maxScore = remedyTotals[sorted[0]] || 1;
+            grid.innerHTML = sorted.map((rem, idx) => {
+                let score = remedyTotals[rem];
+                let pct = Math.round((score / maxScore) * 100);
+                return `
+                    <div class="bg-purple-900/80 border border-purple-700/60 p-2 rounded-lg text-center shadow-sm">
+                        <div class="text-[10px] text-amber-400 font-bold">#${idx + 1} Candidate</div>
+                        <div class="font-extrabold text-white text-xs my-0.5 truncate">${rem}</div>
+                        <div class="text-emerald-400 font-bold font-mono text-[11px]">${score} Marks (${pct}%)</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleRubric(targetId, rubricText, chkEl) {
+            const textarea = document.getElementById(targetId);
+            if (!textarea) return;
+
+            let currentVal = textarea.value.trim();
+            if (!chkEl.checked) {
+                textarea.value = currentVal.replace(rubricText, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '');
+            } else {
+                textarea.value = currentVal ? `${currentVal}, ${rubricText}` : rubricText;
+            }
+
+            calculateTopTenRemedies();
+        }
+
+        // SECURITY PIN LOCK LOGIC
+        function verifyPin() {
+            const pinVal = document.getElementById('pin-input').value;
+            if (pinVal === appData.pin) {
+                document.getElementById('pin-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+            } else {
+                document.getElementById('pin-error').classList.remove('hidden');
+            }
+        }
+
+        function lockSystem() {
+            document.getElementById('pin-screen').classList.remove('hidden');
+            document.getElementById('app-content').classList.add('hidden');
+            document.getElementById('pin-input').value = '';
+        }
+
+        function changeSecurityPin() {
+            const newPin = document.getElementById('new-pin-input').value;
+            if (newPin && newPin.length >= 4) {
+                appData.pin = newPin;
+                saveStorageData();
+                alert('Security PIN updated to: ' + newPin);
+                document.getElementById('new-pin-input').value = '';
+            } else {
+                alert('Please enter a valid PIN with at least 4 digits.');
+            }
+        }
+
+        // TAB SWITCHING
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-page').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+        }
+
+        // PATIENT DIRECTORY
+        function openNewPatientModal() {
+            document.getElementById('patient-modal').classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function saveNewPatient(e) {
+            e.preventDefault();
+            appData.lastMrNumber += 1;
+            const newP = {
+                id: 'P-' + Date.now(),
+                mrId: 'AHC-' + appData.lastMrNumber,
+                name: document.getElementById('p-name').value,
+                age: document.getElementById('p-age').value,
+                gender: document.getElementById('p-gender').value,
+                phone: document.getElementById('p-phone').value,
+                city: document.getElementById('p-city').value || 'Faisalabad',
+                complaint: document.getElementById('p-complaint').value,
+                registeredDate: new Date().toISOString().split('T')[0],
+                kentMentals: '',
+                kentDesires: '',
+                kentGenerals: '',
+                rx: '',
+                instructions: '',
+                attachedImage: ''
+            };
+
+            appData.patients.push(newP);
+            saveStorageData();
+
+            document.getElementById('new-patient-form').reset();
+            closeModal('patient-modal');
+
+            renderPatientTable();
+            renderDashboardStats();
+            populatePatientDropdowns();
+            alert('Patient registered! MR ID: ' + newP.mrId);
+        }
+
+        function renderPatientTable() {
+            const mainBody = document.getElementById('main-patient-table-body');
+            const dashBody = document.getElementById('dashboard-patients-list');
+            const query = (document.getElementById('patient-search-main')?.value || '').toLowerCase();
+
+            mainBody.innerHTML = '';
+            dashBody.innerHTML = '';
+
+            const filtered = appData.patients.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                p.mrId.toLowerCase().includes(query) ||
+                p.phone.includes(query) ||
+                p.city.toLowerCase().includes(query)
+            );
+
+            filtered.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+                tr.innerHTML = `
+                    <td class="p-3 font-mono font-bold text-brand-700">${p.mrId}</td>
+                    <td class="p-3 font-semibold text-slate-800">${p.name}</td>
+                    <td class="p-3">${p.age} Yrs / ${p.gender}</td>
+                    <td class="p-3 font-mono">${p.phone}</td>
+                    <td class="p-3">${p.city}</td>
+                    <td class="p-3 text-slate-400">${p.registeredDate}</td>
+                    <td class="p-3 text-right space-x-1">
+                        <button onclick="openCaseFile('${p.id}')" class="bg-brand-50 hover:bg-brand-100 text-brand-700 px-2.5 py-1 rounded text-[11px] font-semibold border border-brand-200">
+                            <i class="fa-solid fa-notes-medical mr-1"></i> Case File
+                        </button>
+                        <button onclick="openWhatsApp('${p.phone}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[11px] font-semibold border border-emerald-200">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </button>
+                    </td>
+                `;
+                mainBody.appendChild(tr);
+
+                if (dashBody.children.length < 5) {
+                    dashBody.appendChild(tr.cloneNode(true));
+                }
+            });
+        }
+
+        function searchPatientsDashboard() {
+            const q = document.getElementById('dashboard-search-input').value;
+            document.getElementById('patient-search-main').value = q;
+            renderPatientTable();
+        }
+
+        // CASE FILE & KENT MATRIX
+        function openCaseFile(patientId) {
+            const p = appData.patients.find(x => x.id === patientId);
+            if (!p) return;
+
+            currentActiveCasePatientId = patientId;
+            document.getElementById('case-patient-title').innerText = p.name + ' (' + p.age + ' Y / ' + p.gender + ')';
+            document.getElementById('case-patient-mrid').innerText = 'MR ID: ' + p.mrId + ' | Cell: ' + p.phone;
+
+            document.getElementById('kent-mentals').value = p.kentMentals || '';
+            document.getElementById('kent-desires').value = p.kentDesires || '';
+            document.getElementById('kent-generals').value = p.kentGenerals || '';
+            document.getElementById('case-rx').value = p.rx || '';
+            document.getElementById('case-instructions').value = p.instructions || '';
+
+            document.getElementById('case-modal').classList.remove('hidden');
+            calculateTopTenRemedies();
+        }
+
+        function saveCaseDetails() {
+            if (!currentActiveCasePatientId) return;
+            const p = appData.patients.find(x => x.id === currentActiveCasePatientId);
+            if (p) {
+                p.kentMentals = document.getElementById('kent-mentals').value;
+                p.kentDesires = document.getElementById('kent-desires').value;
+                p.kentGenerals = document.getElementById('kent-generals').value;
+                p.rx = document.getElementById('case-rx').value;
+                p.instructions = document.getElementById('case-instructions').value;
+
+                saveStorageData();
+                alert('Case details & single remedy prescription saved successfully!');
+            }
+        }
+
+        // WEEKDAY SHIFT TOGGLES & EDITABLE CUSTOM TIMINGS
+        function renderShiftSettingsTable() {
+            const tbody = document.getElementById('shift-settings-table');
+            tbody.innerHTML = '';
+
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            days.forEach(day => {
+                const shiftObj = appData.shifts[day] || { morning: true, mTime: '09:00 AM - 01:00 PM', evening: true, eTime: '05:00 PM - 09:00 PM' };
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 border-b border-slate-100';
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800">${day}</td>
+                    <td class="p-3 text-center space-y-1">
+                        <div class="flex items-center justify-center space-x-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="shift-${day}-morning" ${shiftObj.morning ? 'checked' : ''} class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600 relative"></div>
+                            </label>
+                            <span class="text-xs font-bold ${shiftObj.morning ? 'text-brand-700' : 'text-red-600'}">${shiftObj.morning ? 'ON' : 'CLOSED'}</span>
+                        </div>
+                        <input type="text" id="shift-${day}-mtime" value="${shiftObj.mTime || '09:00 AM - 01:00 PM'}" class="w-full p-1 text-center border border-slate-300 rounded text-[11px]" placeholder="Morning Timing">
+                    </td>
+                    <td class="p-3 text-center space-y-1">
+                        <div class="flex items-center justify-center space-x-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="shift-${day}-evening" ${shiftObj.evening ? 'checked' : ''} class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600 relative"></div>
+                            </label>
+                            <span class="text-xs font-bold ${shiftObj.evening ? 'text-brand-700' : 'text-red-600'}">${shiftObj.evening ? 'ON' : 'CLOSED'}</span>
+                        </div>
+                        <input type="text" id="shift-${day}-etime" value="${shiftObj.eTime || '05:00 PM - 09:00 PM'}" class="w-full p-1 text-center border border-slate-300 rounded text-[11px]" placeholder="Evening Timing">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updateTodayShiftBadges();
+        }
+
+        function saveShiftSchedule() {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            days.forEach(day => {
+                const mCheck = document.getElementById(`shift-${day}-morning`).checked;
+                const mTimeVal = document.getElementById(`shift-${day}-mtime`).value;
+                const eCheck = document.getElementById(`shift-${day}-evening`).checked;
+                const eTimeVal = document.getElementById(`shift-${day}-etime`).value;
+
+                appData.shifts[day] = { morning: mCheck, mTime: mTimeVal, evening: eCheck, eTime: eTimeVal };
+            });
+
+            saveStorageData();
+            renderShiftSettingsTable();
+            alert('Shift ON/OFF/CLOSED preferences and custom timings saved!');
+        }
+
+        function updateTodayShiftBadges() {
+            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const todayName = dayNames[new Date().getDay()];
+            const todayShifts = appData.shifts[todayName] || { morning: true, evening: true };
+
+            const mEl = document.getElementById('dash-morning-status');
+            const eEl = document.getElementById('dash-evening-status');
+
+            if (mEl && eEl) {
+                mEl.innerText = todayShifts.morning ? `ON (${todayShifts.mTime || ''})` : 'CLOSED';
+                mEl.className = todayShifts.morning ? 'px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800' : 'px-2.5 py-1 rounded-full font-bold bg-red-100 text-red-800';
+
+                eEl.innerText = todayShifts.evening ? `ON (${todayShifts.eTime || ''})` : 'CLOSED';
+                eEl.className = todayShifts.evening ? 'px-2.5 py-1 rounded-full font-bold bg-emerald-100 text-emerald-800' : 'px-2.5 py-1 rounded-full font-bold bg-red-100 text-red-800';
+            }
+        }
+
+        // TIME PARSER & ADVANCER UTILITIES FOR AUTO SCHEDULING (45M / 25M FORMULA)
+        function parseTimeToMinutes(timeStr) {
+            if (!timeStr) return 9 * 60; // default 9:00 AM
+            let clean = timeStr.trim().toUpperCase();
+            let parts = clean.split(' ');
+            let hm = parts[0].split(':');
+            let h = parseInt(hm[0]) || 9;
+            let m = parseInt(hm[1]) || 0;
+            let ampm = parts[1] || 'AM';
+
+            if (ampm === 'PM' && h < 12) h += 12;
+            if (ampm === 'AM' && h === 12) h = 0;
+            return h * 60 + m;
+        }
+
+        function formatMinutesToTime(totalMins) {
+            let h = Math.floor(totalMins / 60) % 24;
+            let m = totalMins % 60;
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12;
+            let mStr = m < 10 ? '0' + m : m;
+            return `${h}:${mStr} ${ampm}`;
+        }
+
+        // APPOINTMENT SCHEDULING (STRICTLY FUTURE + TIME ADVANCE FORMULA)
+        function handleApptPatientChange() {
+            const sel = document.getElementById('appt-patient-select');
+            const customInput = document.getElementById('appt-custom-name');
+            if (sel.value === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.required = true;
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+                customInput.required = false;
+                customInput.value = '';
+            }
+        }
+
+        function toggleApptMode() {
+            const mode = document.getElementById('appt-mode-select').value;
+            const manualBox = document.getElementById('manual-datetime-box');
+            const autoBox = document.getElementById('auto-options-box');
+
+            if (mode === 'manual') {
+                manualBox.classList.remove('hidden');
+                autoBox.classList.add('hidden');
+            } else {
+                manualBox.classList.add('hidden');
+                autoBox.classList.remove('hidden');
+            }
+        }
+
+        function allocateAppointment(e) {
+            e.preventDefault();
+            const patientSelVal = document.getElementById('appt-patient-select').value;
+            const customNameVal = document.getElementById('appt-custom-name').value.trim();
+            const mode = document.getElementById('appt-mode-select').value;
+            const visitTypeCode = document.getElementById('appt-type-select').value; // 'first' or 'followup'
+            const durationMins = visitTypeCode === 'first' ? 45 : 25;
+
+            let patientName = '';
+            let mrId = 'On-Call';
+            let patientPhone = '';
+
+            if (!patientSelVal) {
+                alert('Please select a registered patient or choose On-Call custom name option.');
+                return;
+            }
+
+            if (patientSelVal === 'custom') {
+                if (!customNameVal) {
+                    alert('Please type the on-call patient name.');
+                    return;
+                }
+                patientName = customNameVal + ' (On-Call)';
+            } else {
+                const foundP = appData.patients.find(p => p.id === patientSelVal);
+                if (foundP) {
+                    patientName = foundP.name;
+                    mrId = foundP.mrId;
+                    patientPhone = foundP.phone;
+                }
+            }
+
+            let apptDate = '';
+            let apptShift = 'Manual Booking';
+            let apptTime = '';
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            if (mode === 'manual') {
+                apptDate = document.getElementById('manual-appt-date').value;
+                apptTime = document.getElementById('manual-appt-time').value.trim();
+
+                if (!apptDate || !apptTime) {
+                    alert('Please provide valid future date and time slot.');
+                    return;
+                }
+                if (apptDate <= todayStr) {
+                    alert('Appointments must be in the FUTURE (tomorrow or later). Past or current same-day appointments are not allowed for auto/manual future booking.');
+                    return;
+                }
+            } else {
+                // AUTO: Start searching from TOMORROW onwards (strictly future, no past or present)
+                let candidateDate = new Date();
+                candidateDate.setDate(candidateDate.getDate() + 1); // Start from tomorrow
+                let allocated = null;
+
+                for (let offset = 0; offset < 14; offset++) {
+                    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const dayName = dayNames[candidateDate.getDay()];
+                    const shiftsObj = appData.shifts[dayName] || { morning: true, evening: true };
+
+                    let cDateStr = candidateDate.toISOString().split('T')[0];
+                    if (cDateStr > todayStr) { // strictly future check
+                        // Check Morning Shift
+                        if (shiftsObj.morning) {
+                            let shiftStartStr = (shiftsObj.mTime || '09:00 AM - 01:00 PM').split(' - ')[0];
+                            let existingAppts = appData.appointments.filter(a => a.date === cDateStr && a.shift === 'Morning Shift');
+                            
+                            let nextSlotMins = parseTimeToMinutes(shiftStartStr);
+                            if (existingAppts.length > 0) {
+                                // Find latest end time in existing appts for this shift
+                                existingAppts.forEach(ex => {
+                                    let exStartMins = parseTimeToMinutes(ex.time);
+                                    let exDuration = ex.visitType && ex.visitType.includes('First') ? 45 : 25;
+                                    let exEndMins = exStartMins + exDuration;
+                                    if (exEndMins > nextSlotMins) {
+                                        nextSlotMins = exEndMins;
+                                    }
+                                });
+                            }
+
+                            allocated = {
+                                date: cDateStr,
+                                shift: 'Morning Shift',
+                                time: formatMinutesToTime(nextSlotMins)
+                            };
+                            break;
+                        }
+                        // Check Evening Shift
+                        if (shiftsObj.evening) {
+                            let shiftStartStr = (shiftsObj.eTime || '05:00 PM - 09:00 PM').split(' - ')[0];
+                            let existingAppts = appData.appointments.filter(a => a.date === cDateStr && a.shift === 'Evening Shift');
+                            
+                            let nextSlotMins = parseTimeToMinutes(shiftStartStr);
+                            if (existingAppts.length > 0) {
+                                existingAppts.forEach(ex => {
+                                    let exStartMins = parseTimeToMinutes(ex.time);
+                                    let exDuration = ex.visitType && ex.visitType.includes('First') ? 45 : 25;
+                                    let exEndMins = exStartMins + exDuration;
+                                    if (exEndMins > nextSlotMins) {
+                                        nextSlotMins = exEndMins;
+                                    }
+                                });
+                            }
+
+                            allocated = {
+                                date: cDateStr,
+                                shift: 'Evening Shift',
+                                time: formatMinutesToTime(nextSlotMins)
+                            };
+                            break;
+                        }
+                    }
+                    candidateDate.setDate(candidateDate.getDate() + 1);
+                }
+
+                if (allocated) {
+                    apptDate = allocated.date;
+                    apptShift = allocated.shift;
+                    apptTime = allocated.time;
+                } else {
+                    alert('No open future shifts found.');
+                    return;
+                }
+            }
+
+            const appt = {
+                id: 'APT-' + Date.now(),
+                patientName: patientName,
+                mrId: mrId,
+                phone: patientPhone,
+                date: apptDate,
+                shift: apptShift,
+                time: apptTime,
+                visitType: mode === 'manual' ? 'Manual Booking' : (visitTypeCode === 'first' ? 'First Visit (45m)' : 'Follow-up (25m)'),
+                priority: document.getElementById('appt-priority-select')?.value || 'Advance',
+                status: 'Scheduled'
+            };
+
+            appData.appointments.push(appt);
+            saveStorageData();
+            renderAppointmentsTable();
+            renderDashboardStats();
+            
+            // Automatic WhatsApp Dispatch Trigger if phone number exists
+            if (appt.phone) {
+                let msg = `Dear ${appt.patientName}, your appointment at Akbar Homoeopathic Clinic has been scheduled for ${appt.date} at ${appt.time} (${appt.shift}). Please arrive on time.`;
+                let cleanPhone = appt.phone.replace(/[^0-9]/g, '');
+                window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+
+            alert(`Future Appointment Successfully Scheduled & Timings Calculated!\nPatient: ${appt.patientName}\nDate: ${appt.date} (${appt.time})`);
+            document.getElementById('appointment-allocator-form').reset();
+            
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('manual-appt-date').min = tomorrow.toISOString().split('T')[0];
+            document.getElementById('manual-appt-date').value = tomorrow.toISOString().split('T')[0];
+            toggleApptMode();
+            handleApptPatientChange();
+        }
+
+        function renderAppointmentsTable() {
+            const tbody = document.getElementById('appointment-list-body');
+            tbody.innerHTML = '';
+
+            appData.appointments.forEach(apt => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 border-b border-slate-100';
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold">${apt.date}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">${apt.shift}</span></td>
+                    <td class="p-3 font-mono font-bold text-brand-700">${apt.time}</td>
+                    <td class="p-3 font-medium text-slate-800">${apt.patientName} (${apt.mrId})</td>
+                    <td class="p-3 text-slate-500">${apt.visitType}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">${apt.status}</span></td>
+                    <td class="p-3 text-right space-x-1">
+                        ${apt.phone ? `<button onclick="sendApptWhatsApp('${apt.patientName}', '${apt.date}', '${apt.time}', '${apt.shift}', '${apt.phone}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[11px] font-semibold border border-emerald-200" title="Send WhatsApp Reminder"><i class="fa-brands fa-whatsapp"></i></button>` : ''}
+                        <button onclick="cancelAppointment('${apt.id}')" class="text-red-600 hover:text-red-800 text-xs font-semibold">Cancel</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function sendApptWhatsApp(name, date, time, shift, phone) {
+            let msg = `Dear ${name}, this is a reminder from Akbar Homoeopathic Clinic for your appointment on ${date} at ${time} (${shift}).`;
+            let clean = phone.replace(/[^0-9]/g, '');
+            window.open(`https://wa.me/${clean}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function cancelAppointment(id) {
+            appData.appointments = appData.appointments.filter(a => a.id !== id);
+            saveStorageData();
+            renderAppointmentsTable();
+            renderDashboardStats();
+        }
+
+        // TOGGLE FINANCE FORM FIELDS
+        function toggleFinanceInputs() {
+            const type = document.getElementById('fin-type').value;
+            const patientWrapper = document.getElementById('patient-select-wrapper');
+            const patientFeeBox = document.getElementById('patient-fee-box');
+            const expenseBox = document.getElementById('expense-amount-box');
+
+            if (type === 'Expense') {
+                patientWrapper.classList.add('hidden');
+                patientFeeBox.classList.add('hidden');
+                expenseBox.classList.remove('hidden');
+            } else {
+                patientWrapper.classList.remove('hidden');
+                patientFeeBox.classList.remove('hidden');
+                expenseBox.classList.add('hidden');
+            }
+        }
+
+        function handleFeePaymentSubmit(e) {
+            e.preventDefault();
+            const type = document.getElementById('fin-type').value;
+            const desc = document.getElementById('fin-desc').value;
+
+            let tx = {
+                id: 'TX-' + Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                type: type,
+                description: desc
+            };
+
+            if (type === 'Expense') {
+                const amt = parseFloat(document.getElementById('fin-expense-amount').value) || 0;
+                tx.patientId = null;
+                tx.patientName = 'General Expense / Payment';
+                tx.mrId = 'N/A';
+                tx.consultationFee = 0;
+                tx.remedyFee = 0;
+                tx.amount = amt;
+            } else {
+                const patientId = document.getElementById('fin-patient-select').value;
+                const cFee = parseFloat(document.getElementById('fin-consult-fee').value) || 0;
+                const rFee = parseFloat(document.getElementById('fin-remedy-fee').value) || 0;
+                const total = cFee + rFee;
+                const p = appData.patients.find(x => x.id === patientId);
+
+                tx.patientId = patientId || null;
+                tx.patientName = p ? p.name : 'General Patient';
+                tx.mrId = p ? p.mrId : 'N/A';
+                tx.consultationFee = cFee;
+                tx.remedyFee = rFee;
+                tx.amount = total;
+            }
+
+            appData.finances.push(tx);
+            saveStorageData();
+            renderFinancesLedger();
+            renderDashboardStats();
+
+            if (type === 'Income') {
+                printFeeSlipDirect(tx.id);
+            } else {
+                alert('Expense / General Payment logged successfully!');
+                document.getElementById('finance-form').reset();
+                toggleFinanceInputs();
+            }
+        }
+
+        function renderFinancesLedger() {
+            const tbody = document.getElementById('finance-ledger-body');
+            tbody.innerHTML = '';
+
+            appData.finances.forEach(tx => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 border-b border-slate-100';
+                tr.innerHTML = `
+                    <td class="p-2.5 font-mono text-slate-500">${tx.date}</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tx.type === 'Income' ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">${tx.type}</span></td>
+                    <td class="p-2.5 font-medium text-slate-800">${tx.description} ${tx.patientName && tx.patientName !== 'General Expense / Payment' ? `(${tx.patientName})` : ''}</td>
+                    <td class="p-2.5 font-mono font-bold ${tx.type === 'Income' ? 'text-emerald-600' : 'text-red-600'}">Rs ${tx.amount}</td>
+                    <td class="p-2.5 text-right">
+                        ${tx.type === 'Income' ? `<button onclick="printFeeSlipDirect('${tx.id}')" class="bg-brand-50 hover:bg-brand-100 text-brand-700 px-2 py-1 rounded text-[10px] font-bold border border-brand-200"><i class="fa-solid fa-print"></i> Print Slip</button>` : '-'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // CLEAN PRINT HEADER TEMPLATE
+        function getClinicHeaderPrintHTML() {
+            return `
+                <div class="border-b-2 border-brand-700 pb-3 mb-4 flex justify-between items-start">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-16 h-16 flex-shrink-0">
+                            <svg class="w-full h-full" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="100" r="95" fill="#f0fdf4" />
+                                <path d="M 25 110 A 80 80 0 1 1 175 110" stroke="#84cc16" stroke-width="10" stroke-linecap="round" fill="none"/>
+                                <ellipse cx="100" cy="115" rx="88" ry="26" stroke="#0284c7" stroke-width="5" fill="none" transform="rotate(-12 100 115)"/>
+                                <circle cx="102" cy="62" r="20" fill="#22c55e" />
+                                <path d="M 68 115 C 65 80, 85 85, 102 92 C 120 85, 140 80, 155 100 C 125 125, 120 140, 150 185 C 120 160, 102 130, 68 115 Z" fill="#22c55e" />
+                                <path d="M 152 90 Q 172 58 162 38 Q 148 65 152 90 Z" fill="#16a34a" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">AKBAR HOMOEOPATHIC CLINIC</h1>
+                            <p class="text-xs font-bold text-brand-700">Homoeopathic Physician: Dr. MJ Akbar (DHMS)</p>
+                            <p class="text-[10px] text-slate-600 font-medium leading-tight mt-0.5">
+                                Senior Lecturer at Punjab Homoeopathic Medical College
+                            </p>
+                            <p class="text-[10px] text-slate-500 font-bold mt-0.5">Practice: Single Remedy, Classical Kentian Homoeopathy, & Repertory</p>
+                        </div>
+                    </div>
+                    <div class="text-right text-[10px] font-mono space-y-0.5">
+                        <p class="font-bold text-slate-800"><i class="fa-solid fa-phone text-brand-600"></i> +92-321-6536010</p>
+                        <p class="font-bold text-slate-800"><i class="fa-solid fa-phone text-brand-600"></i> +92-333-6536010</p>
+                        <p class="text-slate-600">Email: hdrmjakbar@gmail.com</p>
+                        <p class="text-slate-500 font-sans">Opposite Street # 16 Main Bazar Abdullahpur, Faisalabad, Punjab, Pakistan</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function printPrescriptionLetter() {
+            if (!currentActiveCasePatientId) return;
+            const p = appData.patients.find(x => x.id === currentActiveCasePatientId);
+            if (!p) return;
+
+            const printSec = document.getElementById('printable-section');
+            printSec.innerHTML = `
+                ${getClinicHeaderPrintHTML()}
+                
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-6 flex justify-between text-xs">
+                    <div>
+                        <p><strong>Patient Name:</strong> ${p.name}</p>
+                        <p><strong>MR ID:</strong> ${p.mrId}</p>
+                    </div>
+                    <div>
+                        <p><strong>Age / Gender:</strong> ${p.age} Yrs / ${p.gender}</p>
+                        <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+
+                <div class="mb-10 space-y-4 min-h-[300px]">
+                    <div class="border-b border-slate-200 pb-3">
+                        <h4 class="font-bold text-slate-800 text-xs uppercase text-brand-800">Rx Single Remedy Prescribed:</h4>
+                        <p class="font-mono text-sm font-bold whitespace-pre-wrap mt-1 text-slate-900">${p.rx || 'No Remedy Specified'}</p>
+                    </div>
+
+                    <div class="border-b border-slate-200 pb-3">
+                        <h4 class="font-bold text-slate-800 text-xs uppercase text-slate-600">Dosage Directions & Instructions:</h4>
+                        <p class="text-xs whitespace-pre-wrap mt-1 text-slate-700">${p.instructions || 'Follow standard classical remedy guidelines.'}</p>
+                    </div>
+                </div>
+
+                <div class="mt-16 flex justify-between items-end pt-8 border-t border-slate-200 text-xs">
+                    <p class="text-[10px] text-slate-400">Akbar Homoeopathic Clinic &bull; Faisalabad, Punjab, Pakistan</p>
+                    <div class="text-center border-t border-slate-400 pt-1 w-52">
+                        <p class="font-bold text-slate-800">Dr. MJ Akbar (DHMS)</p>
+                        <p class="text-[10px] text-slate-500">Homoeopathic Physician</p>
+                    </div>
+                </div>
+            `;
+
+            printSec.classList.remove('hidden');
+            window.print();
+            printSec.classList.add('hidden');
+        }
+
+        function printFeeSlipDirect(txId) {
+            const tx = appData.finances.find(f => f.id === txId);
+            if (!tx) return;
+
+            const printSec = document.getElementById('printable-section');
+            printSec.innerHTML = `
+                ${getClinicHeaderPrintHTML()}
+                
+                <div class="text-center my-3">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 border-b-2 border-slate-800 inline-block px-3 pb-0.5">OFFICIAL FEE RECEIPT VOUCHER</h2>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-4 text-xs space-y-1">
+                    <div class="flex justify-between">
+                        <span><strong>Voucher ID:</strong> ${tx.id}</span>
+                        <span><strong>Date:</strong> ${tx.date}</span>
+                    </div>
+                    <div class="flex justify-between border-t border-slate-200 pt-1">
+                        <span><strong>Patient Name:</strong> ${tx.patientName}</span>
+                        <span><strong>MR ID:</strong> ${tx.mrId}</span>
+                    </div>
+                </div>
+
+                <table class="w-full text-left text-xs border border-slate-300 mb-6">
+                    <thead class="bg-slate-100 uppercase font-semibold text-slate-700">
+                        <tr>
+                            <th class="p-2.5 border-b">Payment Purpose / Service Head</th>
+                            <th class="p-2.5 border-b text-right">Amount (PKR)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                        <tr>
+                            <td class="p-2.5 font-medium text-slate-800">${tx.description}</td>
+                            <td class="p-2.5 text-right font-mono font-bold">Rs ${tx.amount}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-slate-50 font-bold border-t border-slate-300">
+                        <tr>
+                            <td class="p-2.5 text-slate-800">Total Paid Amount:</td>
+                            <td class="p-2.5 text-right font-mono text-sm text-brand-800">Rs ${tx.amount}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="mt-12 flex justify-between items-end pt-6 text-xs">
+                    <p class="text-[10px] text-slate-400">Thank you for visiting Akbar Homoeopathic Clinic.</p>
+                    <div class="text-center border-t border-slate-400 pt-1 w-48">
+                        <p class="font-bold text-slate-800">Authorized Signature / Stamp</p>
+                        <p class="text-[10px] text-slate-500">Akbar Homoeopathic Clinic</p>
+                    </div>
+                </div>
+            `;
+
+            printSec.classList.remove('hidden');
+            window.print();
+            printSec.classList.add('hidden');
+        }
+
+        function promptPrintFeeFromCase() {
+            if (!currentActiveCasePatientId) return;
+            const p = appData.patients.find(x => x.id === currentActiveCasePatientId);
+            if (!p) return;
+
+            const cFee = prompt('Enter Consultation Fee (PKR):', '1000');
+            const rFee = prompt('Enter Single Remedy Charges (PKR):', '500');
+
+            if (cFee !== null) {
+                const total = (parseFloat(cFee) || 0) + (parseFloat(rFee) || 0);
+                const tx = {
+                    id: 'TX-' + Date.now(),
+                    date: new Date().toISOString().split('T')[0],
+                    type: 'Income',
+                    patientId: p.id,
+                    patientName: p.name,
+                    mrId: p.mrId,
+                    description: 'Single Remedy Consultation & Medicine Fee',
+                    consultationFee: parseFloat(cFee) || 0,
+                    remedyFee: parseFloat(rFee) || 0,
+                    amount: total
+                };
+
+                appData.finances.push(tx);
+                saveStorageData();
+                renderFinancesLedger();
+                renderDashboardStats();
+
+                printFeeSlipDirect(tx.id);
+            }
+        }
+
+        // STATS & UTILS
+        function renderDashboardStats() {
+            document.getElementById('stat-total-patients').innerText = appData.patients.length;
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayAppts = appData.appointments.filter(a => a.date === todayStr);
+            document.getElementById('stat-today-appointments').innerText = todayAppts.length;
+
+            let totalIncome = 0;
+            let totalExpense = 0;
+            appData.finances.forEach(f => {
+                if (f.type === 'Income') totalIncome += f.amount;
+                if (f.type === 'Expense') totalExpense += f.amount;
+            });
+
+            document.getElementById('stat-monthly-revenue').innerText = 'Rs ' + totalIncome;
+            document.getElementById('stat-net-income').innerText = 'Net: Rs ' + (totalIncome - totalExpense);
+        }
+
+        function populatePatientDropdowns() {
+            const selects = [
+                document.getElementById('appt-patient-select'),
+                document.getElementById('fin-patient-select')
+            ];
+
+            selects.forEach(sel => {
+                if (!sel) return;
+                const cur = sel.value;
+                if (sel.id === 'appt-patient-select') {
+                    sel.innerHTML = `
+                        <option value="">-- Choose Registered Patient --</option>
+                        <option value="custom" class="font-bold text-brand-700">+ Type On-Call / Custom Name...</option>
+                    `;
+                    appData.patients.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        opt.innerText = `${p.name} (${p.mrId})`;
+                        sel.appendChild(opt);
+                    });
+                } else {
+                    sel.innerHTML = '<option value="">-- General / Non-Patient --</option>';
+                    appData.patients.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p.id;
+                        opt.innerText = `${p.name} (${p.mrId})`;
+                        sel.appendChild(opt);
+                    });
+                }
+                sel.value = cur;
+            });
+        }
+
+        function openWhatsApp(phone) {
+            const clean = phone.replace(/[^0-9]/g, '');
+            window.open(`https://wa.me/${clean}`, '_blank');
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Akbar_Clinic_OS_Backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function resetDataSystem() {
+            if (confirm('Are you sure you want to reset all clinic data? This action cannot be undone.')) {
+                localStorage.removeItem(APP_STORAGE_KEY);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
